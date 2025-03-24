@@ -137,7 +137,7 @@ while True:
       address = socket.gethostbyname(hostname)
       # Connect to the origin server
       # ~~~~ INSERT CODE ~~~~
-      originServerSocket.bind((hostname, 80))
+      originServerSocket.connect((hostname, 80))
       # ~~~~ END CODE INSERT ~~~~
       print ('Connected to origin Server')
 
@@ -148,7 +148,7 @@ while True:
       # originServerRequest is the first line in the request and
       # originServerRequestHeader is the second line in the request
       # ~~~~ INSERT CODE ~~~~
-      originServerRequest = message
+      originServerRequest = method + " " + resource + " " + version
       originServerRequestHeader = "Host: " + hostname
       # ~~~~ END CODE INSERT ~~~~
 
