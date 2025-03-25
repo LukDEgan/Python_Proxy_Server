@@ -4,11 +4,15 @@ import sys
 import os
 import argparse
 import re
-# time for lifetime checks
-import time
+# FUNCTION FOR EXTRACTING HEADERS
+def extract_headers(response):
+  headers = {}
+  lines = response.split("\r\n")
+  for line in lines:
+    print(line)
 # 1MB buffer size
 BUFFER_SIZE = 1000000
-DEFAULT_LIFETIME = 300
+
 # Get the IP address and Port number to use for this web proxy server
 parser = argparse.ArgumentParser()
 parser.add_argument('hostname', help='the IP Address Of Proxy Server')
@@ -113,26 +117,18 @@ while True:
     
     # Check wether the file is currently in the cache
     cacheFile = open(cacheLocation, "r")
-    # Adding time stamp for time checking cached resources
-    cacheTimestamp = os.path.getmtime(cacheLocation)  # Get last modified time
-    currentTime = time.time()    
-    if currentTime - cacheTimestamp < DEFAULT_LIFETIME:
-      cacheData = cacheFile.readlines()
-      print ('Cache hit! Loading from cache file: ' + cacheLocation)
-      # ProxyServer finds a cache hit
-      # Send back response to client 
-      # ~~~~ INSERT CODE ~~~~
-      cacheMessage = ''.join(cacheData).encode()
-      clientSocket.sendall(cacheMessage)
-      cacheData = ''.join(cacheData)
-      # ~~~~ END CODE INSERT ~~~~
-      cacheFile.close()
-      print ('Sent to the client:')
-      print ('> ' + cacheData)
-    else:
-      print("Cache expired, fetching new data")
-      cacheFile.close()
-      raise FileNotFoundError() # trigger the except code
+    cacheData = cacheFile.readlines()
+    print ('Cache hit! Loading from cache file: ' + cacheLocation)
+    # ProxyServer finds a cache hit
+    # Send back response to client 
+    # ~~~~ INSERT CODE ~~~~
+    cacheMessage = ''.join(cacheData).encode()
+    clientSocket.sendall(cacheMessage)
+    cacheData = ''.join(cacheData)
+    # ~~~~ END CODE INSERT ~~~~
+    cacheFile.close()
+    print ('Sent to the client:')
+    print ('> ' + cacheData)
   except:
     # cache miss.  Get resource from origin server
     originServerSocket = None
