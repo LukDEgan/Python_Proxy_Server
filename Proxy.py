@@ -5,11 +5,16 @@ import os
 import argparse
 import re
 # FUNCTION FOR EXTRACTING HEADERS
-def extract_headers(response):
+def extract_headers(response: str):
   headers = {}
-  lines = response.split("\r\n")
-  for line in lines:
-    print(line)
+  headerSection, _, _ = response.partition("\r\n\r\n") #split the headers from the body
+  print("HEADERS:")
+  for line in headerSection.split("\r\n"): 
+    
+    if ": " in line:
+      key, value = line.split(": ", 1)
+      key = key.lower()
+      headers[key] = value
 # 1MB buffer size
 BUFFER_SIZE = 1000000
 
@@ -104,7 +109,6 @@ while True:
     resource = resource + resourceParts[1]
 
   print ('Requested Resource:\t' + resource)
-
   # Check if resource is in cache
   try:
     cacheLocation = './' + hostname + resource
@@ -183,7 +187,7 @@ while True:
       # ~~~~ INSERT CODE ~~~~
       clientSocket.sendall(originResponse)
       # ~~~~ END CODE INSERT ~~~~
-
+      extract_headers(originResponse.decode())
       # Create a new file in the cache for the requested file.
       cacheDir, file = os.path.split(cacheLocation)
       print ('cached directory ' + cacheDir)
