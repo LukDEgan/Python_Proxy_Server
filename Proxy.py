@@ -4,17 +4,25 @@ import sys
 import os
 import argparse
 import re
+import time
 # FUNCTION FOR EXTRACTING HEADERS
 def extract_headers(response: str):
   headers = {}
-  headerSection, _, _ = response.partition("\r\n\r\n") #split the headers from the body
-  print("HEADERS:")
-  for line in headerSection.split("\r\n"): 
-    
+  headerSection, _, _ = response.partition("\n\n") #split the headers from the body
+  for line in headerSection.split("\n"): 
     if ": " in line:
       key, value = line.split(": ", 1)
       key = key.lower()
       headers[key] = value
+  return headers
+
+#FUNCTION FOR EXTRACTING DIRECTIVES
+def extract_directives(header: str):
+  directives = header.split(",")
+  for directive in directives:
+    if directive.startswith(" max-age="):
+      return int(directive.split("=")[1])
+  return None
 # 1MB buffer size
 BUFFER_SIZE = 1000000
 
@@ -127,6 +135,15 @@ while True:
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
     cacheMessage = ''.join(cacheData).encode()
+    headers = extract_headers(''.join(cacheData)) # get headers from response to determine caching rules
+    file_mtime = os.path.getmtime(cacheLocation)
+    current_time = time.time()
+    #check if cache control is a header
+    if "cache-control" in headers:
+      maxAge = extract_directives(headers["cache-control"])
+      if maxAge is not None and (current_time - file_mtime > maxAge):
+        print(f'Cache expired! Fetching a fresh copy (stale by {current_time - file_mtime - maxAge} sec)')
+        raise err
     clientSocket.sendall(cacheMessage)
     cacheData = ''.join(cacheData)
     # ~~~~ END CODE INSERT ~~~~
@@ -187,7 +204,6 @@ while True:
       # ~~~~ INSERT CODE ~~~~
       clientSocket.sendall(originResponse)
       # ~~~~ END CODE INSERT ~~~~
-      extract_headers(originResponse.decode())
       # Create a new file in the cache for the requested file.
       cacheDir, file = os.path.split(cacheLocation)
       print ('cached directory ' + cacheDir)
