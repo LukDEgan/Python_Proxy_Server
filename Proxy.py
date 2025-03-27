@@ -18,11 +18,8 @@ def extract_headers(response: str):
 
 #FUNCTION FOR EXTRACTING DIRECTIVES
 def extract_directives(header: str):
-  directives = header.split(",")
-  for directive in directives:
-    if directive.startswith(" max-age="):
-      return int(directive.split("=")[1])
-  return None
+  directives = header.split(", ")
+  return directives
 # 1MB buffer size
 BUFFER_SIZE = 1000000
 
@@ -140,7 +137,11 @@ while True:
     current_time = time.time()
     #check if cache control is a header
     if "cache-control" in headers:
-      maxAge = extract_directives(headers["cache-control"])
+      ccdirectives = extract_directives(headers["cache-control"])
+      maxAge = None
+      for directive in ccdirectives:
+        if directive.startswith("max-age="):
+          maxAge = int(directive.split("=")[1])
       if maxAge is not None and (current_time - file_mtime > maxAge):
         print(f'Cache expired! Fetching a fresh copy (stale by {current_time - file_mtime - maxAge} sec)')
         raise err
