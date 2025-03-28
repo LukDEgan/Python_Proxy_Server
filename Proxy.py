@@ -131,7 +131,6 @@ while True:
     # ProxyServer finds a cache hit
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
-    cacheMessage = ''.join(cacheData).encode()
     headers = extract_headers(''.join(cacheData)) # get headers from response to determine caching rules
     file_mtime = os.path.getmtime(cacheLocation)
     current_time = time.time()
@@ -145,7 +144,9 @@ while True:
       if maxAge is not None and (current_time - file_mtime > maxAge):
         print(f'Cache expired! Fetching a fresh copy (stale by {current_time - file_mtime - maxAge} sec)')
         raise err
+    cacheMessage = ''.join(cacheData).encode()
     clientSocket.sendall(cacheMessage)
+    cacheData = ''.join(cacheData) 
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
     print ('Sent to the client:')
@@ -203,20 +204,40 @@ while True:
       # Send the response to the client
       # ~~~~ INSERT CODE ~~~~
       clientSocket.sendall(originResponse)
+      originResponseTEXT = originResponse.decode()
+      #check if the response is cachable  
+      cachable = True
+      #1. Check response code for 302 (dont cache)
+      responseLines = originResponseTEXT.split('\r\n')
+      statusLine = responseLines[0]
+      statusCode = statusLine.split()[1]
+      if statusCode == "302":
+        cachable = False
+        print("302 Response: Will not cache.")
+      headers = extract_headers(originResponseTEXT)
+    
+      if "cache-control" in headers:
+        directives = extract_directives(headers["cache-control"])
+        maxAge = None
+        for directive in directives:
+          if directive.startswith("private"):
+            print("Response is Private: Will not cache.")
+            cachable = False
       # ~~~~ END CODE INSERT ~~~~
-      # Create a new file in the cache for the requested file.
-      cacheDir, file = os.path.split(cacheLocation)
-      print ('cached directory ' + cacheDir)
-      if not os.path.exists(cacheDir):
-        os.makedirs(cacheDir)
-      cacheFile = open(cacheLocation, 'wb')
+      if cachable:
+        # Create a new file in the cache for the requested file.
+        cacheDir, file = os.path.split(cacheLocation)
+        print ('cached directory ' + cacheDir)
+        if not os.path.exists(cacheDir):
+          os.makedirs(cacheDir)
+        cacheFile = open(cacheLocation, 'wb')
 
-      # Save origin server response in the cache file
-      # ~~~~ INSERT CODE ~~~~
-      cacheFile.write(originResponse)
-      # ~~~~ END CODE INSERT ~~~~
-      cacheFile.close()
-      print ('cache file closed')
+        # Save origin server response in the cache file
+        # ~~~~ INSERT CODE ~~~~
+        cacheFile.write(originResponse)
+        # ~~~~ END CODE INSERT ~~~~
+        cacheFile.close()
+        print ('cache file closed')
 
       # finished communicating with origin server - shutdown socket writes
       print ('origin response received. Closing sockets')
