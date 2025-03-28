@@ -141,6 +141,9 @@ while True:
       for directive in ccdirectives:
         if directive.startswith("max-age="):
           maxAge = int(directive.split("=")[1])
+        if directive.startswith("no-cache"):
+          print("Revalidation required: contacting origin")
+          raise err
       if maxAge is not None and (current_time - file_mtime > maxAge):
         print(f'Cache expired! Fetching a fresh copy (stale by {current_time - file_mtime - maxAge} sec)')
         raise err
@@ -213,16 +216,16 @@ while True:
       statusCode = statusLine.split()[1]
       if statusCode == "302":
         cachable = False
-        print("302 Response: Will not cache.")
+        print("302 Response: Will not cache unless directed to by cache-control headers such as max-age")
       headers = extract_headers(originResponseTEXT)
     
       if "cache-control" in headers:
         directives = extract_directives(headers["cache-control"])
         maxAge = None
         for directive in directives:
-          if directive.startswith("private"):
-            print("Response is Private: Will not cache.")
-            cachable = False
+          if directive.startswith("max-age="):
+            print("Response has max-age: Will cache.")
+            cachable = True
           if directive.startswith("no-store"):
             print("Response includes no-store: Will not cache.")
             cachable = False
