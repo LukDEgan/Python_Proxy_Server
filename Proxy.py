@@ -223,6 +223,9 @@ while True:
           if directive.startswith("private"):
             print("Response is Private: Will not cache.")
             cachable = False
+          if directive.startswith("no-store"):
+            print("Response includes no-store: Will not cache.")
+            cachable = False
       # ~~~~ END CODE INSERT ~~~~
       if cachable:
         # Create a new file in the cache for the requested file.
