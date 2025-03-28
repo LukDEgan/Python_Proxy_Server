@@ -146,7 +146,6 @@ while True:
         print(f'Cache expired! Fetching a fresh copy (stale by {current_time - file_mtime - maxAge} sec)')
         raise err
     clientSocket.sendall(cacheMessage)
-    cacheData = ''.join(cacheData)
     # ~~~~ END CODE INSERT ~~~~
     cacheFile.close()
     print ('Sent to the client:')
