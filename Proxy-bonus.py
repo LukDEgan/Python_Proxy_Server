@@ -1,3 +1,5 @@
+# Bonus question 1: Expires header
+
 # Include the libraries for socket and system calls
 import socket
 import sys
@@ -134,6 +136,13 @@ while True:
     headers = extract_headers(''.join(cacheData)) # get headers from response to determine caching rules
     file_mtime = os.path.getmtime(cacheLocation)
     current_time = time.time()
+    #BONUS: check if expires is in the headers
+    if "expires" in headers:
+      expiration = headers["expires"].split()
+      date = expiration[1:4]
+      print("date:")
+      for item in date:
+        print(item)
     #check if cache control is a header
     if "cache-control" in headers:
       ccdirectives = extract_directives(headers["cache-control"])
