@@ -7,6 +7,8 @@ import os
 import argparse
 import re
 import time
+#email for time stamps for expirations
+import email.utils
 # FUNCTION FOR EXTRACTING HEADERS
 def extract_headers(response: str):
   headers = {}
@@ -136,20 +138,16 @@ while True:
     headers = extract_headers(''.join(cacheData)) # get headers from response to determine caching rules
     file_mtime = os.path.getmtime(cacheLocation)
     current_time = time.time()
-    #BONUS: check if expires is in the headers
-    if "expires" in headers:
-      expiration = headers["expires"].split()
-      date = expiration[1:4]
-      print("date:")
-      for item in date:
-        print(item)
+    
     #check if cache control is a header
+    max_age_present = False
     if "cache-control" in headers:
       ccdirectives = extract_directives(headers["cache-control"])
       maxAge = None
       for directive in ccdirectives:
         if directive.startswith("max-age="):
           maxAge = int(directive.split("=")[1])
+          max_age_present = True
         if directive.startswith("no-cache"):
           print("Revalidation required: contacting origin")
           raise err
@@ -157,6 +155,13 @@ while True:
         print(f'Cache expired! Fetching a fresh copy (stale by {current_time - file_mtime - maxAge} sec)')
         raise err
   
+  #BONUS: check if expires is in the headers
+    if "expires" in headers and not max_age_present:
+      expiration = email.utils.parsedate_to_datetime(''.join(headers["expires"]))
+      expires_timestamp = expiration.timestamp()
+      if expires_timestamp < current_time:
+        print("Cache File expired")
+        raise err
     cacheMessage = ''.join(cacheData).encode()
     clientSocket.sendall(cacheMessage)
     cacheData = ''.join(cacheData) 
