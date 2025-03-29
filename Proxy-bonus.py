@@ -47,9 +47,17 @@ def extract_links(response: str, base_url: str):
     links.add(match)
   return links
 
-def pre_fetch_links(links: set):
+def pre_fetch_links(links: set, server_socket: socket):
     for link in links:
-      print(f"fetching link {link}")
+      print(f"Pre-Fetching: {link}")
+      request = f"GET {link} HTTP/1.1\r\nHost: localhost:8080"
+      try:
+        server_socket.sendall(request.encode())
+      except socket.error:
+        print ('Forward request to origin failed')
+        sys.exit()
+      response = server_socket.recv(BUFFER_SIZE)
+      
       
 # Get the IP address and Port number to use for this web proxy server
 parser = argparse.ArgumentParser()
@@ -249,7 +257,7 @@ while True:
       originResponseTEXT = originResponse.decode()
       #BONUS: CHECK FOR LINKS TO PRE CACHE
       links = extract_links(originResponseTEXT, request)
-      pre_fetch_links(links)
+      pre_fetch_links(links, originServerSocket)
       #check if the response is cachable  
       cachable = True
       #1. Check response code for 302 (dont cache)
