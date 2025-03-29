@@ -37,13 +37,20 @@ def extract_directives(header: str):
 # 1MB buffer size
 BUFFER_SIZE = 1000000
 
-#BONUS QUESTION 2 FUNCTION FOR EXTRACTING LINKS WITHIN THE HTML
-def extract_links(response: str):
+#BONUS QUESTION 2 FUNCTIONs FOR EXTRACTING LINKS WITHIN THE HTML AND FETCHING THEM
+def extract_links(response: str, base_url: str):
   links = set()
   matches = re.findall('(?:href|src)="([^"]+)"', response) #using regex to capture links inside quotes
   for match in matches:
+    if not match.startswith("http"):
+      match = base_url + match
     links.add(match)
-  print(links)
+  return links
+
+def pre_fetch_links(links: set):
+    for link in links:
+      print(f"fetching link {link}")
+      
 # Get the IP address and Port number to use for this web proxy server
 parser = argparse.ArgumentParser()
 parser.add_argument('hostname', help='the IP Address Of Proxy Server')
@@ -241,7 +248,8 @@ while True:
       clientSocket.sendall(originResponse)
       originResponseTEXT = originResponse.decode()
       #BONUS: CHECK FOR LINKS TO PRE CACHE
-      extract_links(originResponseTEXT)
+      links = extract_links(originResponseTEXT, request)
+      pre_fetch_links(links)
       #check if the response is cachable  
       cachable = True
       #1. Check response code for 302 (dont cache)
