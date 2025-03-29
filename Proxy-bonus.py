@@ -1,5 +1,14 @@
-# Bonus question 1: Expires header
+# Bonus question 1: Expires header implementation
+# To implement the detection of the expires header i made use of a function i made in the base assignment file proxy.py called extract headers.
+# This function returns a dictionary of header keys and directive values.
+# Using this function, i can simply check if expires is a key
+# However, I needed to implement this check after the max-age check as max-age always takes precendent over the expires. 
+# After I have the value in the expires header I transform it into a timestamp so i can compare it to the current time. To do this I imported the email utils library.
+# /-------------------------------/
+# Bonus question 2: Pre fetching files implementation
 
+# /-------------------------------/
+# Bonus question 3: 
 # Include the libraries for socket and system calls
 import socket
 import sys
@@ -9,6 +18,7 @@ import re
 import time
 #email for time stamps for expirations
 import email.utils
+#re for finding links inside html content
 # FUNCTION FOR EXTRACTING HEADERS
 def extract_headers(response: str):
   headers = {}
@@ -20,13 +30,20 @@ def extract_headers(response: str):
       headers[key] = value
   return headers
 
-#FUNCTION FOR EXTRACTING DIRECTIVES
+#FUNCTION FOR EXTRACTING DIRECTIVES IN CASE OF MULTIPLE DIRECTIVES SUCH AS CACHE_CONTROL 
 def extract_directives(header: str):
   directives = header.split(", ")
   return directives
 # 1MB buffer size
 BUFFER_SIZE = 1000000
 
+#BONUS QUESTION 2 FUNCTION FOR EXTRACTING LINKS WITHIN THE HTML
+def extract_links(response: str):
+  links = set()
+  matches = re.findall('(?:href|src)="([^"]+)"', response) #using regex to capture links inside quotes
+  for match in matches:
+    links.add(match)
+  print(links)
 # Get the IP address and Port number to use for this web proxy server
 parser = argparse.ArgumentParser()
 parser.add_argument('hostname', help='the IP Address Of Proxy Server')
@@ -223,6 +240,8 @@ while True:
       # ~~~~ INSERT CODE ~~~~
       clientSocket.sendall(originResponse)
       originResponseTEXT = originResponse.decode()
+      #BONUS: CHECK FOR LINKS TO PRE CACHE
+      extract_links(originResponseTEXT)
       #check if the response is cachable  
       cachable = True
       #1. Check response code for 302 (dont cache)
