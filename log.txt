@@ -1,0 +1,191 @@
+commit 31e0c19f6837bf94ac5532c56dd4655f867fc3e6
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 31 16:38:09 2025 +1030
+
+    added comments explaining the bonus questions solution
+
+commit bc0a64a5038ec3d7a7e845d93409ca671211f1fe
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 31 14:41:28 2025 +1030
+
+    added step in pre fetching where it will check the cache before pre fetching
+
+commit 7200161428f21d46d16452bc06849e5dba32fefc
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 31 14:32:35 2025 +1030
+
+    handled case where reponse is image
+
+commit 9c1919b6f8a1d7b30f17f9183aa3ce147061ab2e
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 31 13:03:07 2025 +1030
+
+    resolved issue of parsing the wrong base url when extracting links, leading to incorrect links. only issue now is requesting pages which exceed buffer size
+
+commit 67caa02fd5535b2ea987a0e555e1111e4ac784a0
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 31 12:44:13 2025 +1030
+
+    added relative path handling in pre fetch links
+
+commit 79571102e3c00f03cf22b1e0118a016f2384f1c5
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 31 12:40:34 2025 +1030
+
+    tested pre fetching with real webpage and relative urls are not being parsed correctly, leading to errors when reuesting.
+
+commit dd43f6053ca9cf3b9387883e8e3684f2627c823c
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 31 12:25:27 2025 +1030
+
+    got pre fetching workinggit add! it was hanging on recv because i wasnt formatting the request right, I forgot to add \r\n\r\n to the end of the header section.
+
+commit f9ae347a6f632d4f4a4eb1cc2328369b471e54d8
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 31 12:06:11 2025 +1030
+
+    making function for caching a response due to cases of several links. just copied and pasted the caching logic in the skeleton code. haven't tested yet
+
+commit edfe4e375865e49c73a30850f25819c18d1cc153
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Sat Mar 29 17:05:55 2025 +1030
+
+    added socket argument to make calls to origin from the pre fetch links function. Now i need to cache the result
+
+commit 7e3a8ebfcf0716e3e634e2e23cd75fc5e75b6486
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Sat Mar 29 16:43:09 2025 +1030
+
+    added another function to actually fetch the links, havent implemented it fully yet, just testing to see if new case where relative link is added works
+
+commit 7d1151ce476bb1d7556f760a24a381c0d6616bfa
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Sat Mar 29 16:28:11 2025 +1030
+
+    added extract links function for bonus question 2. Tested it by printing the extracted links, now need to work on requesting these links and caching the response
+
+commit 83eda15d9b4187756f9daaf2279129c6cae248d5
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Sat Mar 29 13:29:24 2025 +1030
+
+    added the email utils lib (some guy on piazza asked if we could use it), this made timestamping a lot easier. Also added the functionality where max-age takes precedent over expires header
+
+commit 0b6c89eb67f57acb6b24f179159e0447a732e1fd
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Sat Mar 29 13:16:13 2025 +1030
+
+    working on bonus question 1: expires header. Have extracted header using previous funtion
+
+commit cbe2c5ca537cba91f4550541ec25e600a9fcecfb
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Fri Mar 28 18:37:50 2025 +1030
+
+    extended the 302 response code behaviour such that it CAN be cached if directed to by another option such as max-age, also added no-cache behaviour by just forwarding the behaviour to the origin
+
+commit 47160fcf457467d2c51880cad21298b35467c5c8
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Fri Mar 28 17:34:30 2025 +1030
+
+    added no store directive
+
+commit 77962aada69bc5135c0127d247bb409cc811d3ff
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Fri Mar 28 13:26:37 2025 +1030
+
+    added 302 response code handling. Proxy will now not cache 302 responses
+
+commit f11b4d1854245211fb95ae2f5fd564c3f5cf3c2b
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Fri Mar 28 11:40:17 2025 +1030
+
+    now working on images functionality
+
+commit 9555e3cb554c4854b84100152355e17b522f1eb0
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Thu Mar 27 21:36:07 2025 +1030
+
+    made extracting directives more suited to general use for future directives
+
+commit 2112faed1f46dddada32ae9556ef17a9011b36cb
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Thu Mar 27 21:24:51 2025 +1030
+
+    added max-age directive functionality
+
+commit 20308cbcc011c66dfbe19a6a5a9383ffd72f9718
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Thu Mar 27 20:17:39 2025 +1030
+
+    added function that extracts headers from response
+
+commit 26c27b48965032a2250b93d58e0eb922839d823d
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Tue Mar 25 13:25:57 2025 +1030
+
+    working on function to parse headers and extract cache related ones
+
+commit 29310de85417e56c7ad7ccca6538b72313166d48
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Tue Mar 25 13:03:06 2025 +1030
+
+    added default lifetime check in case of no cache related headers
+
+commit 860f6e540b20b63bba7a1f09bc6b8bc0059c43b0
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Tue Mar 25 12:13:44 2025 +1030
+
+    fixed issue with cache hit resulting in connection to origin due to incorrect string format when printing
+
+commit bc98da73b94074013c6947969666e0050a090b69
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 15:55:43 2025 +1030
+
+    fixed error with requested URI and resource
+
+commit 03e5c1d8ba420d6f944d67600d4a58eb62aef486
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 15:30:12 2025 +1030
+
+    added the writing to cache file part
+
+commit 47aea9cd36b96c03fe1047f22ffe6b60b214f83c
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 15:21:11 2025 +1030
+
+    added request header field for Host:
+
+commit 46063dab3ca1bb555f1a53686f3514442578e38d
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 15:18:00 2025 +1030
+
+    copied client message to use as request line for origin server, now working on header fields
+
+commit fe1309aa5b1d77c9b45eabea2588c8288e2eb4fd
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 14:50:22 2025 +1030
+
+    added cache hit send
+
+commit 9ebbcb1c7bd9a64f2f5c8352839bc3d80c932c41
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 14:43:06 2025 +1030
+
+    store client request data
+
+commit 77fa5bf2086a6bc5b5da995abc95aa5d41b0f492
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 14:39:18 2025 +1030
+
+    accepted on server socket and placed new connection in client socket
+
+commit f9361f689985ce572c3df33272721ee0167c4ad0
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 14:37:42 2025 +1030
+
+    created server socket, bounded it, and now listening
+
+commit 409048223a777099d158df5be2f799fd4d7a7c22
+Author: Luke Egan <lukeegan2003@gmail.com>
+Date:   Mon Mar 24 14:13:17 2025 +1030
+
+    initial commit, added python skeleton file
