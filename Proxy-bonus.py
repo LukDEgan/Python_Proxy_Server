@@ -46,8 +46,11 @@ def extract_links(response: str, base_url: str):
       absolute_url = match
     elif match.startswith("/"):
       absolute_url = base_url.rstrip("/") + match
-    else:
+    elif "." in match:
       absolute_url = base_url.rstrip("/") + "/" + match
+    else:
+      continue
+    print(f"url: {absolute_url}")
     links.add(absolute_url)
   return links
 
@@ -79,8 +82,8 @@ def pre_fetch_links(links: set, server_socket: socket):
         if cache_location.endswith('/'):
           cache_location = cache_location + 'default'
         cache_response(response, cache_location)
-      except:
-        print("failed to cache at cache location")
+      except Exception:
+        print(f"failed to cache at {cache_location}: {Exception}")
 
 def cache_response(response: bytes, cache_location: str):
   cacheDir, file = os.path.split(cache_location)
@@ -292,7 +295,7 @@ while True:
       clientSocket.sendall(originResponse)
       originResponseTEXT = originResponse.decode()
       #BONUS: CHECK FOR LINKS TO PRE CACHE
-      links = extract_links(originResponseTEXT, request)
+      links = extract_links(originResponseTEXT, hostname)
       pre_fetch_links(links, originServerSocket)
       #check if the response is cachable  
       cachable = True
