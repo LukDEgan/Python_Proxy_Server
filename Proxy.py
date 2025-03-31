@@ -125,13 +125,14 @@ while True:
     fileExists = os.path.isfile(cacheLocation)
     
     # Check wether the file is currently in the cache
-    cacheFile = open(cacheLocation, "r")
-    cacheData = cacheFile.readlines()
+    cacheFile = open(cacheLocation, "rb")
+    cacheData = cacheFile.read()
     print ('Cache hit! Loading from cache file: ' + cacheLocation)
     # ProxyServer finds a cache hit
     # Send back response to client 
     # ~~~~ INSERT CODE ~~~~
-    headers = extract_headers(''.join(cacheData)) # get headers from response to determine caching rules
+    headers, body = cacheData.split(b'\r\n\r\n', 1) 
+    headers = extract_headers(headers.decode()) # get headers from response to determine caching rules
     file_mtime = os.path.getmtime(cacheLocation)
     current_time = time.time()
     #check if cache control is a header
@@ -147,14 +148,15 @@ while True:
       if maxAge is not None and (current_time - file_mtime > maxAge):
         print(f'Cache expired! Fetching a fresh copy (stale by {current_time - file_mtime - maxAge} sec)')
         raise err
-  
-    cacheMessage = ''.join(cacheData).encode()
-    clientSocket.sendall(cacheMessage)
-    cacheData = ''.join(cacheData) 
+    clientSocket.sendall(cacheData)
+    if not 'image' in headers['content-type']:
+      cacheMessage = cacheData.decode()
     # ~~~~ END CODE INSERT ~~~~
+      print ('Sent to the client:')
+      print ('> ' + cacheMessage)
+    else:
+      print("File is image, cannot display her. Image sent to client")
     cacheFile.close()
-    print ('Sent to the client:')
-    print ('> ' + cacheData)
   except:
     # cache miss.  Get resource from origin server
     originServerSocket = None
@@ -208,7 +210,8 @@ while True:
       # Send the response to the client
       # ~~~~ INSERT CODE ~~~~
       clientSocket.sendall(originResponse)
-      originResponseTEXT = originResponse.decode()
+      headers, body = originResponse.split(b'\r\n\r\n', 1) 
+      originResponseTEXT = headers.decode()
       #check if the response is cachable  
       cachable = True
       #1. Check response code for 302 (dont cache)
