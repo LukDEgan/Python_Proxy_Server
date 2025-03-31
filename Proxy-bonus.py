@@ -50,13 +50,33 @@ def extract_links(response: str, base_url: str):
 def pre_fetch_links(links: set, server_socket: socket):
     for link in links:
       print(f"Pre-Fetching: {link}")
-      request = f"GET {link} HTTP/1.1\r\nHost: localhost:8080"
+      request = f"GET {link} HTTP/1.1\r\nHost: localhost:8080\r\n\r\n"
       try:
         server_socket.sendall(request.encode())
       except socket.error:
         print ('Pre-fetch forward request to origin failed')
         sys.exit()
       response = server_socket.recv(BUFFER_SIZE)
+      #remove http protocol from link
+      URI = re.sub('^(/?)http(s?)://', '', link, count=1)
+      # Remove parent directory changes - security
+      URI = URI.replace('/..', '')
+      # Split hostname from resource name
+      resourceParts = URI.split('/', 1)
+      hostname = resourceParts[0]
+      resource = '/'
+      if len(resourceParts) == 2:
+      # Resource is absolute URI with hostname and resource
+        resource = resource + resourceParts[1]
+      print ('Requested Resource:\t' + resource)
+      # Check if resource is in cache
+      try:
+        cache_location = './' + hostname + resource
+        if cache_location.endswith('/'):
+          cache_location = cache_location + 'default'
+        cache_response(response, cache_location)
+      except:
+        print("failed to cache at cache location")
 
 def cache_response(response: bytes, cache_location: str):
   cacheDir, file = os.path.split(cache_location)
