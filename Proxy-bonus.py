@@ -54,10 +54,22 @@ def pre_fetch_links(links: set, server_socket: socket):
       try:
         server_socket.sendall(request.encode())
       except socket.error:
-        print ('Forward request to origin failed')
+        print ('Pre-fetch forward request to origin failed')
         sys.exit()
       response = server_socket.recv(BUFFER_SIZE)
-      
+
+def cache_response(response: bytes, cache_location: str):
+  cacheDir, file = os.path.split(cache_location)
+  print ('cached directory ' + cacheDir)
+  if not os.path.exists(cacheDir):
+    os.makedirs(cacheDir)
+  cacheFile = open(cache_location, 'wb')
+  # Save origin server response in the cache file
+  # ~~~~ INSERT CODE ~~~~
+  cacheFile.write(response)
+  # ~~~~ END CODE INSERT ~~~~
+  cacheFile.close()
+  print ('cache file closed')
       
 # Get the IP address and Port number to use for this web proxy server
 parser = argparse.ArgumentParser()
