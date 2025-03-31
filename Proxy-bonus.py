@@ -42,9 +42,13 @@ def extract_links(response: str, base_url: str):
   links = set()
   matches = re.findall('(?:href|src)="([^"]+)"', response) #using regex to capture links inside quotes
   for match in matches:
-    if not match.startswith("http"):
-      match = base_url + match
-    links.add(match)
+    if match.startswith("http"):    
+      absolute_url = match
+    elif match.startswith("/"):
+      absolute_url = base_url.rstrip("/") + match
+    else:
+      absolute_url = base_url.rstrip("/") + "/" + match
+    links.add(absolute_url)
   return links
 
 def pre_fetch_links(links: set, server_socket: socket):
