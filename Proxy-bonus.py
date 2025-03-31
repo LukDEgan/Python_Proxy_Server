@@ -1,14 +1,18 @@
 # Bonus question 1: Expires header implementation
-# To implement the detection of the expires header i made use of a function i made in the base assignment file proxy.py called extract headers.
-# This function returns a dictionary of header keys and directive values.
-# Using this function, i can simply check if expires is a key
-# However, I needed to implement this check after the max-age check as max-age always takes precendent over the expires. 
-# After I have the value in the expires header I transform it into a timestamp so i can compare it to the current time. To do this I imported the email utils library.
+"""To implement the detection of the expires header i made use of a function i made in the base assignment file proxy.py called extract headers.
+This function returns a dictionary of header keys and directive values.
+Using this function, i can simply check if expires is a key
+However, I needed to implement this check after the max-age check as max-age always takes precendent over the expires. 
+After I have the value in the expires header I transform it into a timestamp so i can compare it to the current time. To do this I imported the email utils library."""
 # /-------------------------------/
-# Bonus question 2: Pre fetching files implementation
-
+"""Bonus question 2: Pre fetching files implementation
+In order to pre-fetch files, i first needed to create a function which creates a set of links. Using regex i can find links which follow href and src
+in the html body. I also make these links absolute links as its easier to handle later on. After that, I pass the links to another function which will request them
+this other function called pre-fetch links first checks if the link has already been put into the cache from an earlier request. This is important
+as if you roam a webpage, say stackoverflow, there are bound to be common links such as logos and such, so you need to check the cache before handling the links
+Next, I use the same logic in proxy.py code to request and collect the reponeses from the origin server. Which i then pass to a new function to cache the reponse.
+This other funtion, called cache_response follows the same logic as in the skeleton code. And thats pretty much it."""
 # /-------------------------------/
-# Bonus question 3: 
 # Include the libraries for socket and system calls
 import socket
 import sys
